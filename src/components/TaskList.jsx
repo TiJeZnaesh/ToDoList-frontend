@@ -1,59 +1,74 @@
-import React, {useState, useEffect} from 'react'; //импортируем реакт и хуки для управления состоянием и побочными эффектами
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Card, List, Typography, Spin, Alert } from 'antd';
+import { CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
 
-//объявляем компонент TaskList
-const TaskList = () =>{
-    //создадим состояние tasks и функцию setTasks для его обновления
+const { Title } = Typography;
+
+const TaskList = () => {
     const [tasks, setTasks] = useState([]);
-    //создадим состояние лоэдинг для отслеживания процесса загрузки данных
     const [loading, setLoading] = useState(true);
-    //создадим состояние error для хранения информации об ошибках
-    const [error, setError] = useState(null)
+    const [error, setError] = useState(null);
 
-    //используем хук useEffect для загрузки данных при монтировании компонента
-    useEffect(()=>{
-        //отправим get запрос на эндпоинт для получения списка задач
+    useEffect(() => {
         axios.get('http://127.0.0.1:8000/api/task/')
-        .then(response =>{
-            //в случае успешного ответа обновляем состояние tasks с полученными данными
-            setTasks(response.data);
-            //устанавливаем loading в False так как данные загружены
-            setLoading(false);
-        })
-        .catch(error=>{
-            //в случае ошибки сохраняем информацию об ошибке в состоянии error
-            setError(error.message);
-            //устанавливаем loading в false так как попытка загрузки завершена
-            setLoading(false);
-            console.error("ошибка при загрузке задачи", error);
+            .then(response => {
+                setTasks(response.data);
+                setLoading(false);
+            })
+            .catch(error => {
+                setError(error.message);
+                setLoading(false);
+                console.error("Ошибка при загрузке задач", error);
+            });
+    }, []);
 
-        })
-    },[]); //пустой массив зависимостей означает, что эффект выполнится только один раз
-    if (loading){
-        return <div>Загрузка...</div>;
+    // 1. Обработка состояния загрузки
+    if (loading) {
+        return (
+            <div style={{ textAlign: 'center', padding: '50px' }}>
+                <Spin size="large" tip="Загрузка задач..." />
+            </div>
+        );
     }
-    if (error){
-        return <div>Ошибка:{error}</div>;
+
+    // 2. Обработка ошибок
+    if (error) {
+        return (
+            <Alert
+                message="Произошла ошибка"
+                description={`Не удалось загрузить задачи: ${error}`}
+                type="error"
+                showIcon
+                style={{ margin: '20px' }}
+            />
+        );
     }
-    //возвращаем jsx разметку для отображения списка задач
-    return(
-        <div>
-            <h1>Список задач</h1>
-            {tasks.length===0 ? (
-                <p>Нет задач</p>
-            ):(
-                //если задачи есть, то рендерим их в виде списка
-                <ul>
-                    {tasks.map(task=>(
-                        <li key={task.id}>
-                            <h3>{task.title}</h3>
-                            {task.description && <p>{task.description}</p> }
-                        </li>
-                    ))}
-                </ul>
-            )} {/*тернарный оператор в js*/}
-        </div>
+
+    // 3. Основной интерфейс с задачами
+    return (
+        <Card title={<Title level={2}>📋 Список задач</Title>} bordered={false} style={{ margin: '20px' }}>
+            <List
+                itemLayout="horizontal"
+                dataSource={tasks}
+                locale={{ emptyText: 'Пока нет задач. Создайте первую!' }}
+                renderItem={(task) => (
+                    <List.Item
+                        actions={[
+                            task.is_completed ?
+                                <span style={{ color: '#52c41a' }}><CheckCircleOutlined /> Выполнена</span> :
+                                <span><ClockCircleOutlined /> В работе</span>
+                        ]}
+                    >
+                        <List.Item.Meta
+                            title={task.title}
+                            description={task.description || 'Описание отсутствует'}
+                        />
+                    </List.Item>
+                )}
+            />
+        </Card>
     );
 };
-//экспортируем компонент taskList для использования в других частях приложения
+
 export default TaskList;
