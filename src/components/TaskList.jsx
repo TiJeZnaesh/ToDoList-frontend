@@ -11,7 +11,7 @@ const TaskList = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        axios.get('http://127.0.0.1:8000/api/task/')
+        axios.get('http://127.0.0.1:8000/api/tasks/')
             .then(response => {
                 setTasks(response.data);
                 setLoading(false);
