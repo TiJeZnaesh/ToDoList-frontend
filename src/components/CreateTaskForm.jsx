@@ -1,5 +1,7 @@
-import { Descriptions, Form } from "antd";
-import TextArea from "antd/es/input/TextArea";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { DatePicker, Form, Input, Button, Select, message } from "antd";
+const { TextArea } = Input;
 
 const CreateTaskForm = ({ onTaskCreated }) => {
     //хук для управления формой антдизайна
@@ -9,7 +11,7 @@ const CreateTaskForm = ({ onTaskCreated }) => {
     const [loading, setLoading] = useState(false);
     //загружаем список проектов при монтировании компонента
     useEffect(() => {
-        axios.get('http://127.0.0.1:8000/api/projects') //гет запрос к апи проектов
+        axios.get('http://127.0.0.1:8000/api/projects/') //гет запрос к апи проектов
             .then(response => {
                 setProjects(response.data) //сохраняем проекты в состоянии
             })
@@ -32,56 +34,84 @@ const CreateTaskForm = ({ onTaskCreated }) => {
             is_completed: false,
         };
         //отправляем пост запрос для создания задачи
-        axios.post('http://127.0.0.1:8000/api/tasks', taskData)
-        .then(response => {
-            message.success('Задача успешно создана!');
-            //очищаем форму
-            form.resetFields();
-            //вызываем колбек для обновления списка
-            if(onTaskCreated) {
-                onTaskCreated(response.data)
-            }
-        })
-        .catch(error => {
-            console.error("Ошибка при загрузке задач", error);
-            message.error("Не удалось загрузить задачи");
-        })
-        //выключаем индикатор загрузки
-        .finally(() => {
-            setLoading(false)
-        });
+        axios.post('http://127.0.0.1:8000/api/tasks/', taskData)
+            .then(response => {
+                message.success('Задача успешно создана!');
+                //очищаем форму
+                form.resetFields();
+                //вызываем колбек для обновления списка
+                if (onTaskCreated) {
+                    onTaskCreated(response.data)
+                }
+            })
+            .catch(error => {
+                console.error("Ошибка при загрузке задач", error);
+                message.error("Не удалось загрузить задачи");
+            })
+            //выключаем индикатор загрузки
+            .finally(() => {
+                setLoading(false)
+            });
     };
-    return(
+    return (
         <Form
-            form = {form}
-            layout = "vertical"
-            onFinish = {onFinish}
-            style = {{maxWidth:600, margin:'20px auto'}}
+            form={form}
+            layout="vertical"
+            onFinish={onFinish}
+            style={{ maxWidth: 600, margin: '20px auto' }}
         >
             {/* поле для названия задачи*/}
             <Form.Item
-                label = "Название задачи"
-                name = "title"
-                rules = {[{required:true, message:'Введите название задачи'}]}
+                label="Название задачи"
+                name="title"
+                rules={[{ required: true, message: 'Введите название задачи' }]}
             >
-                <Input placeholder = "Например: подготовить отчет"/>
+                <Input placeholder="Например: подготовить отчет" />
             </Form.Item>
             {/* поле для описания задачи*/}
             <Form.Item
-                label = "Описание задачи"
-                name = "description"
+                label="Описание задачи"
+                name="description"
             >
-                <TextArea rows = {4} placeholder = "Детали задачи не обязательно"/>
+                <TextArea rows={4} placeholder="Детали задачи не обязательно" />
             </Form.Item>
             {/*поле для выбора даты выполнения*/}
             <Form.Item
-                label = "Дата выполнения"
-                name = "due_date"
-                rules = {[{required:true, message:'Выберите дату выполнения'}]}
+                label="Дата выполнения"
+                name="due_date"
+                rules={[{ required: true, message: 'Выберите дату выполнения' }]}
             >
-            //с этого места продолжитьс
+                {/*используем дейт пикер для выбора даты*/}
+                <DatePicker
+                    showTime
+                    format="YYYY-MM-DD HH:mm:ss"
+                    style={{ width: "100%" }}
+                    placeholder="Выберите дату и время"
+                />
+            </Form.Item>
+            {/*поле для выбора проекта*/}
+            <Form.Item
+                label="Проект"
+                name="project"
+                rules={[{ required: true, message: 'Выберите проект' }]}
+            >
+                <Select placeholder="Выберите проект">
+                    {/*генерируем опции для каждого проекта (начинаем мапить(сопоставляем))*/}
+                    {projects.map(project => (
+                        <Option key={project.id} value={project.id}>
+                            {project.name}
+                        </Option>
+                    ))}
+                </Select>
+            </Form.Item>
+            {/*кнопка отправки формы*/}
+            <Form.Item>
+                <Button htmlType="submit" loading={loading}>
+                    Создать задачу
+                </Button>
             </Form.Item>
         </Form>
-    )
+    );
+};
 
-}
+export default CreateTaskForm;

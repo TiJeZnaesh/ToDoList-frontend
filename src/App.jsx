@@ -1,10 +1,29 @@
 import TaskList from './components/TaskList';
+import CreateTaskForm from './components/CreateTaskForm';
+import { Layout, Row, Col } from 'antd';
 
-function App(){
-  return(
-    <div>
-      <TaskList />
-    </div>
+const { Content } = Layout;
+
+function App() {
+  //функция для обработки создания новой задачи
+  const handleTaskCreated = (newTask) => {
+    //в будущем дописать логику обновления списка задач
+    console.log('Новая задача создана:', newTask);
+  };
+  return (
+    <Layout style={{ minHeight: '100vh' }}>
+      <Content style={{ padding: '20px' }}>
+        {/*используем сетку антд для расположения компонентов*/}
+        <Row gutter={[20, 20]}>
+          <Col xs={24} md={12}>
+            <CreateTaskForm onTaskCreated={handleTaskCreated} />
+          </Col>
+          <Col xs={24}>
+            <TaskList />
+          </Col>
+        </Row>
+      </Content>
+    </Layout>
   )
 }
 
