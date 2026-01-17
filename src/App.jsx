@@ -1,4 +1,5 @@
 import TaskList from './components/TaskList';
+import ProjectList from './components/ProjectList'
 import CreateTaskForm from './components/CreateTaskForm';
 import { Layout, Row, Col } from 'antd';
 
@@ -20,6 +21,9 @@ function App() {
           </Col>
           <Col xs={24}>
             <TaskList />
+          </Col>
+          <Col xs={24} md={12}>
+            <ProjectList />
           </Col>
         </Row>
       </Content>

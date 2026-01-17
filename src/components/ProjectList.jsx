@@ -1,3 +1,9 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Card, List, Typography, Spin, Alert } from 'antd';
+
+const { Title, Text } = Typography;
+
 //новый компонент для отображения проектов
 const ProjectList = () => {
     const [projects, setProjects] = useState([]);
@@ -22,7 +28,26 @@ const ProjectList = () => {
                 itemLayout="horizontal"
                 dataSource={projects}
                 locale={{ emptyText: "Пока нет проектов. Создайте первый!" }}
-                //остановились на renderItem 
+                renderItem={(project)=>(
+                    <List.Item>
+                        <List.Item.Meta
+                            title= {project.name}
+                            description={
+                                <>
+                                    <Text type="secondary">
+                                        {project.description || "Без описания"}
+                                    </Text>
+                                    <Text type="secondary" style={{fontSize: "12px"}}>
+                                        Создан: {new Date(project.created_at).toLocaleDateString()}
+                                    </Text>
+                                </>
+                            }
+                        >
+                        </List.Item.Meta>
+                    </List.Item>
+                )}
+            />
         </Card>
     )
-}
+};
+export default ProjectList;
