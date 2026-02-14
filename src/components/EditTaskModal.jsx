@@ -1,6 +1,9 @@
-import { Form, Input, Modal } from "antd";
-import FormItem from "antd/es/form/FormItem";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { DatePicker, Form, Input, Button, Select, message, Modal } from "antd";
+
+const { TextArea } = Input;
+const { Option } = Select;
 
 const EditTaskModal = ({ task, visible, onCancel, onUpdate }) => {
     const [form] = Form.useForm();
@@ -83,9 +86,73 @@ const EditTaskModal = ({ task, visible, onCancel, onUpdate }) => {
                     name="title"
                     rules={[{ required: true, message: "Введите название задачи" }]}
                 >
-                    <Input placeholder="Название задачи"></Input> //продолжить писать элемент дискрипшен
+                    <Input placeholder="Название задачи">
+                    </Input>
+                </Form.Item>
+                <Form.Item
+                    label="Описание"
+                    name="description"
+                >
+                    <TextArea rows={3} placeholder="Описание задачи"></TextArea>
+                </Form.Item>
+                <Form.Item
+                    label="Срок выполнения"
+                    name="due_date"
+                    rules={[{ required: true, message: "Введите срок выполнения задачи" }]}
+                >
+                    <DatePicker
+                        showTime
+                        format="YYYY-MM-DD HH:mm:ss"
+                    >
+                    </DatePicker>
+                </Form.Item>
+                <Form.Item
+                    label="Проект"
+                    name="project"
+                    rules={[{ required: true, message: "Введите название проекта" }]}
+                >
+                    <Select
+                        placeholder="Выберите проект"
+                    >
+                        {projects.map(project => (
+                            <Option key={project.id} value={project.id}>
+                                {project.name}
+                            </Option>
+                        ))}
+                    </Select>
+                </Form.Item>
+                <Form.Item
+                    label="Теги"
+                    name="tags"
+                >
+                    <Select
+                        placeholder="Выберите тег"
+                        mode="multiple"
+                    >
+                        {tags.map(tag => (
+                            <Option key={tag.id} value={tag.id}>
+                                {tag.name}
+                            </Option>
+                        ))}
+                    </Select>
+                </Form.Item>
+                <Form.Item
+                    label="Статус"
+                    name="is_completed"
+                >
+                    <Select
+                        placeholder="Статус задачи"
+                    >
+                        <Option value={false}>В работе</Option>
+                        <Option value={true}>Выполнена</Option>
+                    </Select>
+                </Form.Item>
+                <Form.Item>
+                    <Button onClick={onCancel}>Отмена</Button>
+                    <Button loading={loading}>Сохранить изменения</Button>
                 </Form.Item>
             </Form>
         </Modal>
-    )
-}
+    );
+};
+export default EditTaskModal;

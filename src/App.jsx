@@ -1,6 +1,7 @@
 import TaskList from './components/TaskList';
 import ProjectList from './components/ProjectList'
 import CreateTaskForm from './components/CreateTaskForm';
+import EditTaskModal from './components/EditTaskModal';
 import { Layout, Row, Col } from 'antd';
 
 const { Content } = Layout;
@@ -24,6 +25,9 @@ function App() {
           </Col>
           <Col xs={24} md={12}>
             <ProjectList />
+          </Col>
+          <Col xs={24}>
+            <EditTaskModal />
           </Col>
         </Row>
       </Content>
