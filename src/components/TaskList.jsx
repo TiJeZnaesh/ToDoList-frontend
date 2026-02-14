@@ -9,6 +9,8 @@ const TaskList = () => {
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [editingTask, setEditinTask] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
         axios.get('http://127.0.0.1:8000/api/tasks/')
@@ -22,6 +24,12 @@ const TaskList = () => {
                 console.error("Ошибка при загрузке задач", error);
             });
     }, []);
+
+    // Функция открытия модального окна редактирования
+    const handleEditClick = (task) => {
+        setEditingTask(task);
+        setModalVisible(true);
+    };
 
     // 1. Обработка состояния загрузки
     if (loading) {
@@ -58,6 +66,7 @@ const TaskList = () => {
                             task.is_completed ?
                                 <span style={{ color: '#52c41a' }}><CheckCircleOutlined /> Выполнена</span> :
                                 <span><ClockCircleOutlined /> В работе</span>
+                            // остановились - добавить кнопку редактирвоания
                         ]}
                     >
                         <List.Item.Meta
