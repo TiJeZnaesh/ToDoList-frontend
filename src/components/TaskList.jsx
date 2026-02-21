@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Card, List, Typography, Spin, Alert } from 'antd';
-import { CheckCircleOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import { Card, List, Typography, Spin, Alert, Button, message } from 'antd';
+import { CheckCircleOutlined, ClockCircleOutlined, EditOutlined } from '@ant-design/icons';
+import EditTaskModal from './EditTaskModal';
 
 const { Title } = Typography;
 
@@ -9,7 +10,7 @@ const TaskList = () => {
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [editingTask, setEditinTask] = useState(null);
+    const [editingTask, setEditingTask] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
@@ -55,28 +56,56 @@ const TaskList = () => {
 
     // 3. Основной интерфейс с задачами
     return (
-        <Card title={<Title level={2}>📋 Список задач</Title>} bordered={false} style={{ margin: '20px' }}>
-            <List
-                itemLayout="horizontal"
-                dataSource={tasks}
-                locale={{ emptyText: 'Пока нет задач. Создайте первую!' }}
-                renderItem={(task) => (
-                    <List.Item
-                        actions={[
-                            task.is_completed ?
-                                <span style={{ color: '#52c41a' }}><CheckCircleOutlined /> Выполнена</span> :
-                                <span><ClockCircleOutlined /> В работе</span>
-                            // остановились - добавить кнопку редактирвоания
-                        ]}
-                    >
-                        <List.Item.Meta
-                            title={task.title}
-                            description={task.description || 'Описание отсутствует'}
-                        />
-                    </List.Item>
-                )}
-            />
-        </Card>
+        <>
+            <Card title={<Title level={2}>📋 Список задач</Title>} bordered={false} style={{ margin: '20px' }}>
+                <List
+                    itemLayout="horizontal"
+                    dataSource={tasks}
+                    locale={{ emptyText: 'Пока нет задач. Создайте первую!' }}
+                    renderItem={(task) => (
+                        <List.Item
+                            actions={[
+                                task.is_completed ?
+                                    <span style={{ color: '#52c41a' }}><CheckCircleOutlined /> Выполнена</span> :
+                                    <span><ClockCircleOutlined /> В работе</span>,
+                                // кнопка редактирвоания задачи
+                                <Button
+                                    type="text"
+                                    icon={<EditOutlined />}
+                                    onClick={() => handleEditClick(task)}
+                                >
+                                    Редактировать
+                                </Button>
+                            ]}
+                        >
+                            <List.Item.Meta
+                                title={task.title}
+                                description={task.description || 'Описание отсутствует'}
+                            />
+                        </List.Item>
+                    )}
+                />
+            </Card>
+            {/*добавляем модальное окно*/}
+            {editingTask &&
+                <EditTaskModal
+                    task={editingTask}
+                    visible={modalVisible}
+                    onCancel={() => {
+                        setModalVisible(false);
+                        setEditinTask(null);
+                    }}
+                    onUpdate={(updatedTask) => {
+                        setTasks(tasks.map(task =>
+                            task.id === updatedTask.id ? updatedTask : task
+                        ));
+                        setModalVisible(false);
+                        setEditinTask(null);
+                        message.success("Задача обновлена");
+                    }}
+                />
+            }
+        </>
     );
 };
 
