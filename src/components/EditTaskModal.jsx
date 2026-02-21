@@ -78,6 +78,7 @@ const EditTaskModal = ({ task, visible, onCancel, onUpdate }) => {
             open={visible}
             onCancel={onCancel}
             width={700}
+            footer={null}
         >
             <Form
                 form={form}
@@ -151,7 +152,7 @@ const EditTaskModal = ({ task, visible, onCancel, onUpdate }) => {
                 </Form.Item>
                 <Form.Item>
                     <Button onClick={onCancel}>Отмена</Button>
-                    <Button loading={loading}>Сохранить изменения</Button>
+                    <Button htmlType="submit" loading={loading}>Сохранить изменения</Button>
                 </Form.Item>
             </Form>
         </Modal>
