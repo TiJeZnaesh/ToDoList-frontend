@@ -93,14 +93,14 @@ const TaskList = () => {
                     visible={modalVisible}
                     onCancel={() => {
                         setModalVisible(false);
-                        setEditinTask(null);
+                        setEditingTask(null);
                     }}
                     onUpdate={(updatedTask) => {
                         setTasks(tasks.map(task =>
                             task.id === updatedTask.id ? updatedTask : task
                         ));
                         setModalVisible(false);
-                        setEditinTask(null);
+                        setEditingTask(null);
                         message.success("Задача обновлена");
                     }}
                 />

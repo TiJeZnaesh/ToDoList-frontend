@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { DatePicker, Form, Input, Button, Select, message, Modal } from "antd";
+import moment from 'moment';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -37,10 +38,11 @@ const EditTaskModal = ({ task, visible, onCancel, onUpdate }) => {
     //заполнить форму данными задачи при открытия
     useEffect(() => {
         if (task && visible) {
+            const dueDate = task.due_date ? moment(task.due_date) : null;
             form.setFieldsValue({
                 title: task.title,
                 description: task.description,
-                due_date: task.due_date,
+                due_date: dueDate,
                 project: task.project.id,
                 tags: task.tags?.map(tag => tag.id) || [],
                 is_completed: task.is_completed
@@ -51,13 +53,13 @@ const EditTaskModal = ({ task, visible, onCancel, onUpdate }) => {
     const handleSave = (values) => {
         setLoading(true);
 
-        const updateTask = {
+        const updatedTask = {
             ...values,
             due_date: values.due_date.format("YYYY-MM-DD HH:mm:ss"),
             tags: values.tags || []
         };
 
-        axios.put(`http://127.0.0.1:8000/api/tasks/${task.id}/`, updateTask)
+        axios.put(`http://127.0.0.1:8000/api/tasks/${task.id}/`, updatedTask)
             .then(response => {
                 onUpdate(response.data);
             })
